@@ -4,7 +4,6 @@ Last updated: 2026-10-20
 
 ## Next up
 - [ ] **Phase 2 / start:** PDF/DOCX extraction with page references (PyMuPDF, python-docx).
-- [ ] (Pending, needs a GitHub remote) confirm first CI run is green.
 
 ## Roadmap
 ### Phase 1: Foundation
@@ -12,7 +11,7 @@ Last updated: 2026-10-20
 - [x] Ollama structured-output test (llama3.2): schema-valid; copy-as-written amount pattern works (1 sample, not an accuracy claim)
 - [x] Repo, layout, config, `/health`, test, README, CLAUDE.md, PROGRESS.md
 - [x] Mac venv + tests pass + server runs locally
-- [x] GitHub Actions: pytest + ruff (workflow written; first remote run not yet observed)
+- [x] GitHub Actions: pytest + ruff (green on GitHub: Python 3.10 and 3.13)
 ### Phase 2: Document processing
 - [ ] PDF/DOCX extraction with page references (PyMuPDF, python-docx)
 - [ ] Upload validation (type, size, path safety)
@@ -46,3 +45,4 @@ Last updated: 2026-10-20
   not yet verified on the Mac venv).
 - 2026-10-20: Mac venv (Python 3.13.7) created; `pytest` 1 passed, `ruff check .` clean, uvicorn `/health` returned 200 with expected JSON.
 - 2026-10-20: Added `.github/workflows/ci.yml` (ruff + pytest, Python 3.10 and 3.13). YAML parses; same commands pass locally. Not yet run on GitHub.
+- 2026-10-20: Pushed to GitHub (origin). First CI run green on Python 3.10 and 3.13.
