@@ -5,7 +5,6 @@ Last updated: 2026-10-20
 
 ## Next up
 - [ ] **Day 1:** PDF/DOCX extraction with page references + upload validation (see Day 1 below).
-- [ ] (Optional, needs GitHub remote) confirm first CI run is green.
 
 ## Machine constraints (M1, 8 GB RAM) that shape this plan
 - One model loaded at a time (`OLLAMA_MAX_LOADED_MODELS=1`, `OLLAMA_NUM_PARALLEL=1`, `num_ctx` 4096).
@@ -23,7 +22,7 @@ Last updated: 2026-10-20
 - [x] Ollama structured-output test (llama3.2): schema-valid; copy-as-written amount pattern works (1 sample, not an accuracy claim)
 - [x] Repo, layout, config, `/health`, test, README, CLAUDE.md, PROGRESS.md
 - [x] Mac venv + tests pass + server runs locally
-- [x] GitHub Actions workflow written (first remote run not yet observed)
+- [x] GitHub Actions: pytest + ruff (green on GitHub: Python 3.10 and 3.13)
 
 ### Day 1: Document processing
 - [ ] PDF/DOCX extraction with page references (PyMuPDF, python-docx)
