@@ -2,11 +2,11 @@
 
 RAG + LLM decision-support system that screens vendor bids against tender requirements
 with evidence-backed findings and human review. It never awards or rejects bids itself.
-Resume-focused MLOps project; ~1-2 hours/day; local-first and free (no paid APIs).
+Resume-focused MLOps project; ONE-WEEK target (see PROGRESS.md plan); local-first and free (no paid APIs).
 
 ## Session protocol (follow every session)
 1. Read `PROGRESS.md` first. It is the source of truth for what is done and what is next.
-2. Work ONLY on the first unchecked task under "Next up". Do not skip ahead.
+2. Work ONLY on the first unchecked task under "Next up" / the current Day. Do not skip ahead. If a day runs over, cut scope per the "Out of scope" list rather than adding infrastructure.
 3. Verify results by running commands/tests. Never claim success without evidence.
 4. When a task is verified: tick it in `PROGRESS.md`, add a dated line to the Log, update
    "Next up", then commit.
