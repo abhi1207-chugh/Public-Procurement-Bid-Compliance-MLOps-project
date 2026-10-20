@@ -4,7 +4,7 @@ Target: working end-to-end project in ONE WEEK (Day 1 = first day of Phase 2 wor
 Last updated: 2026-10-20
 
 ## Next up
-- [ ] **Day 1:** PDF/DOCX extraction with page references + upload validation (see Day 1 below).
+- [ ] **Day 2:** LLM provider interface + Ollama client + on-disk cache (see Day 2 below).
 
 ## Machine constraints (M1, 8 GB RAM) that shape this plan
 - One model loaded at a time (`OLLAMA_MAX_LOADED_MODELS=1`, `OLLAMA_NUM_PARALLEL=1`, `num_ctx` 4096).
@@ -25,9 +25,9 @@ Last updated: 2026-10-20
 - [x] GitHub Actions: pytest + ruff (green on GitHub: Python 3.10 and 3.13)
 
 ### Day 1: Document processing
-- [ ] PDF/DOCX extraction with page references (PyMuPDF, python-docx)
-- [ ] Upload validation (type, size, filename/path safety)
-- [ ] Tests on small sample files; README note
+- [x] PDF/DOCX extraction with page references (PyMuPDF, python-docx)
+- [x] Upload validation (type, size, filename/path safety)
+- [x] Tests on small sample files; README note
 
 ### Day 2: LLM extraction
 - [ ] LLM provider interface + Ollama client + on-disk cache (model+prompt+input hash)
@@ -75,3 +75,4 @@ Prometheus/Grafana, Evidently drift monitoring, reviewer feedback loop, reranker
 - 2026-10-20: Added `.github/workflows/ci.yml` (ruff + pytest, Python 3.10 and 3.13). YAML parses; same commands pass locally. Not yet run on GitHub.
 - 2026-10-20: Pushed to GitHub (origin). First CI run green on Python 3.10 and 3.13.
 - 2026-10-20: Switched to one-week plan tailored to M1/8GB; monitoring stack moved out of scope.
+- 2026-10-20: Day 1 done. Added `extraction.py` and `validation.py`, PyMuPDF and python-docx deps, 21 new tests (sample PDF/DOCX built in-test, no binary fixtures). `pytest` 22 passed, `ruff check .` clean. Not yet wired to an API endpoint (Day 6).
