@@ -4,7 +4,7 @@ Target: working end-to-end project in ONE WEEK (Day 1 = first day of Phase 2 wor
 Last updated: 2026-10-20
 
 ## Next up
-- [ ] **Day 2:** Extract requirements from one synthetic tender; inspect results manually (see Day 2 below).
+- [ ] **Day 3:** Chunking with page/source metadata (see Day 3 below).
 
 ## Machine constraints (M1, 8 GB RAM) that shape this plan
 - One model loaded at a time (`OLLAMA_MAX_LOADED_MODELS=1`, `OLLAMA_NUM_PARALLEL=1`, `num_ctx` 4096).
@@ -33,7 +33,7 @@ Last updated: 2026-10-20
 - [x] LLM provider interface + Ollama client + on-disk cache (model+prompt+input hash)
 - [x] Pydantic `Requirement` schema; prompt with category definitions; amount-as-written field
 - [x] Deterministic amount parser (lakh/crore/crore -> rupees) with unit tests
-- [ ] Extract requirements from one synthetic tender; inspect results manually
+- [x] Extract requirements from one synthetic tender; inspect results manually
 
 ### Day 3: RAG
 - [ ] Chunking with page/source metadata
@@ -79,3 +79,5 @@ Prometheus/Grafana, Evidently drift monitoring, reviewer feedback loop, reranker
 - 2026-10-20: Day 2 task 1 done. `llm.py`: `LLMProvider` protocol, `OllamaProvider` (temperature 0, seed 0, `format` schema), `CachedProvider` (sha256 of model+options+system+prompt+schema; errors not cached). 7 new tests with mocked HTTP; `pytest` 29 passed, ruff clean. Live check: one real llama3.2 call took 6.9 s, repeat was a cache hit at ~0 s and returned the same output (single call, not a benchmark).
 - 2026-10-20: Day 2 task 2 done. `requirements.py`: `Category` enum + definitions, `ExtractedRequirement`/`RequirementList` (LLM output), `Requirement` (adds id + source_locator, set by code), extraction prompt (tender text delimited and marked untrusted), JSON schema. 8 new tests; `pytest` 37 passed, ruff clean. Live smoke on a 2-sentence text: Ollama accepted the schema, output validated, categories correct; but it returned amount "50 lakh" for "Rs 50 lakh" (dropped "Rs"), so the amount parser must not require the "Rs" prefix. 1 sample, not an accuracy claim.
 - 2026-10-20: Day 2 task 3 done. `amounts.py`: `parse_amount_rupees` (Decimal, handles Rs/Rs./INR/₹, lakh/lac/crore/cr/thousand/million, Indian and western commas, "/-", "only", parenthetical words; rejects ranges, multiple amounts, number words, negatives, surrounding prose with `AmountParseError`). 29 new test cases; `pytest` 66 passed, ruff clean. Not yet wired to requirement extraction.
+- 2026-10-20: Day 2 task 4 done (Day 2 complete). Added `requirement_extraction.py` (per-block LLM extraction; ids/locators set by code), `scripts/make_synthetic_tender.py` and `data/synthetic/tender_syn_001.pdf` (fictional, marked SYNTHETIC; 2 pages, 9 requirements I wrote, plus a prompt-injection sentence). `pytest` 67 passed, ruff clean.
+  Manual inspection of one real llama3.2 run (1 tender I authored, NOT an accuracy claim): 9/9 requirements found, no extras, categories sensible, all 9 quotes verbatim in the source page, injection sentence ignored, 3/3 amounts parsed correctly (5,000,000; 2,500,000; 200,000). Observed issues: the model dropped the "Rs" prefix on all 3 amounts (parser handles it); marked "should provide a warranty" as mandatory=True (arguably only recommended); GST and PAN merged into one requirement. Uncached run took 34.9 s for 2 pages.
