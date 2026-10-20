@@ -9,3 +9,4 @@ data/raw/
 data/uploads/
 mlruns/
 *.egg-info/
+data/cache/

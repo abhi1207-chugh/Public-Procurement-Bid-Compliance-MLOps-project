@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     llm_model: str = "llama3.2"
     embedding_model: str = "nomic-embed-text"
     llm_num_ctx: int = 4096
+    llm_cache_dir: str = "data/cache/llm"
+    llm_timeout_s: float = 120.0
 
 
 def get_settings() -> Settings:

@@ -4,7 +4,7 @@ Target: working end-to-end project in ONE WEEK (Day 1 = first day of Phase 2 wor
 Last updated: 2026-10-20
 
 ## Next up
-- [ ] **Day 2:** LLM provider interface + Ollama client + on-disk cache (see Day 2 below).
+- [ ] **Day 2:** Pydantic `Requirement` schema; prompt with category definitions; amount-as-written field (see Day 2 below).
 
 ## Machine constraints (M1, 8 GB RAM) that shape this plan
 - One model loaded at a time (`OLLAMA_MAX_LOADED_MODELS=1`, `OLLAMA_NUM_PARALLEL=1`, `num_ctx` 4096).
@@ -30,7 +30,7 @@ Last updated: 2026-10-20
 - [x] Tests on small sample files; README note
 
 ### Day 2: LLM extraction
-- [ ] LLM provider interface + Ollama client + on-disk cache (model+prompt+input hash)
+- [x] LLM provider interface + Ollama client + on-disk cache (model+prompt+input hash)
 - [ ] Pydantic `Requirement` schema; prompt with category definitions; amount-as-written field
 - [ ] Deterministic amount parser (lakh/crore/crore -> rupees) with unit tests
 - [ ] Extract requirements from one synthetic tender; inspect results manually
@@ -76,3 +76,4 @@ Prometheus/Grafana, Evidently drift monitoring, reviewer feedback loop, reranker
 - 2026-10-20: Pushed to GitHub (origin). First CI run green on Python 3.10 and 3.13.
 - 2026-10-20: Switched to one-week plan tailored to M1/8GB; monitoring stack moved out of scope.
 - 2026-10-20: Day 1 done. Added `extraction.py` and `validation.py`, PyMuPDF and python-docx deps, 21 new tests (sample PDF/DOCX built in-test, no binary fixtures). `pytest` 22 passed, `ruff check .` clean. Not yet wired to an API endpoint (Day 6).
+- 2026-10-20: Day 2 task 1 done. `llm.py`: `LLMProvider` protocol, `OllamaProvider` (temperature 0, seed 0, `format` schema), `CachedProvider` (sha256 of model+options+system+prompt+schema; errors not cached). 7 new tests with mocked HTTP; `pytest` 29 passed, ruff clean. Live check: one real llama3.2 call took 6.9 s, repeat was a cache hit at ~0 s and returned the same output (single call, not a benchmark).
