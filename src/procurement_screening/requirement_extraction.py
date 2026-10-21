@@ -7,6 +7,7 @@ from .requirements import (
     RequirementList,
     build_extraction_prompt,
     extraction_schema,
+    is_mandatory,
 )
 
 
@@ -27,6 +28,7 @@ def extract_requirements(doc: ExtractedDocument, provider: LLMProvider) -> list[
                     **item.model_dump(),
                     id=f"R{len(found) + 1}",
                     source_locator=block.locator,
+                    mandatory=is_mandatory(item.quote),
                 )
             )
     return found

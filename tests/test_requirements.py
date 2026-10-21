@@ -7,6 +7,7 @@ from procurement_screening.requirements import (
     RequirementList,
     build_extraction_prompt,
     extraction_schema,
+    is_mandatory,
 )
 
 
@@ -17,7 +18,7 @@ def test_every_category_is_defined():
 def test_valid_payload_keeps_amount_as_written():
     r = RequirementList.model_validate_json(
         '{"requirements":[{"quote":"Turnover of Rs 50 lakh","category":"financial",'
-        '"summary":"min turnover","mandatory":true,"amount_as_written":"Rs 50 lakh"}]}'
+        '"summary":"min turnover","amount_as_written":"Rs 50 lakh"}]}'
     )
     assert r.requirements[0].amount_as_written == "Rs 50 lakh"
     assert isinstance(r.requirements[0].amount_as_written, str)
@@ -25,7 +26,7 @@ def test_valid_payload_keeps_amount_as_written():
 
 def test_amount_optional():
     r = RequirementList.model_validate_json(
-        '{"requirements":[{"quote":"q","category":"document","summary":"s","mandatory":false}]}'
+        '{"requirements":[{"quote":"q","category":"document","summary":"s"}]}'
     )
     assert r.requirements[0].amount_as_written is None
 
@@ -33,8 +34,8 @@ def test_amount_optional():
 @pytest.mark.parametrize(
     "payload",
     [
-        '{"requirements":[{"quote":"q","category":"bogus","summary":"s","mandatory":true}]}',
-        '{"requirements":[{"quote":"q","category":"other","summary":"s"}]}',
+        '{"requirements":[{"quote":"q","category":"bogus","summary":"s"}]}',
+        '{"requirements":[{"quote":"q","category":"other"}]}',
         '{"nope":[]}',
     ],
 )
@@ -55,3 +56,26 @@ def test_schema_lists_categories_and_required_fields():
     assert "requirements" in schema["properties"]
     assert set(schema["$defs"]["Category"]["enum"]) == {c.value for c in Category}
     assert "amount_as_written" in schema["$defs"]["ExtractedRequirement"]["properties"]
+
+
+@pytest.mark.parametrize(
+    ("quote", "expected"),
+    [
+        ("The bidder must hold a valid ISO 9001 certification.", True),
+        ("The bidder shall submit a GST certificate.", True),
+        ("EMD of Rs 2,00,000/- is required along with the bid.", True),
+        ("Submission of an affidavit is MANDATORY.", True),
+        ("The bidder should provide a warranty of at least 3 years.", False),
+        ("The bidder may submit a brochure.", False),
+        ("A site visit is not required.", False),
+        ("Bidders must submit ID; a bank letter is not mandatory.", True),
+        ("Mustard-coloured finish preferred.", False),
+        ("", False),
+    ],
+)
+def test_is_mandatory(quote, expected):
+    assert is_mandatory(quote) is expected
+
+
+def test_llm_schema_has_no_mandatory_field():
+    assert "mandatory" not in extraction_schema()["$defs"]["ExtractedRequirement"]["properties"]

@@ -17,10 +17,9 @@ class FakeLLM:
             {
                 "requirements": [
                     {
-                        "quote": f"q{n}",
+                        "quote": "The bidder must comply." if n == 1 else "Bidder should comply.",
                         "category": "document",
                         "summary": "s",
-                        "mandatory": True,
                     }
                 ]
             }
@@ -41,3 +40,4 @@ def test_ids_and_locators_assigned_by_code():
     assert [(r.id, r.source_locator) for r in reqs] == [("R1", "page 1"), ("R2", "page 2")]
     assert len(llm.calls) == 2
     assert llm.calls[0][2] is not None  # schema passed
+    assert [r.mandatory for r in reqs] == [True, False]  # decided by code from the quote

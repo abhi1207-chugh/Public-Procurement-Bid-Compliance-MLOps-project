@@ -3,6 +3,7 @@
 The LLM only extracts structure. Amounts are copied AS WRITTEN (e.g. "Rs 50 lakh");
 unit conversion and threshold checks are done later by deterministic code.
 """
+import re
 from enum import Enum
 
 from pydantic import BaseModel, Field
@@ -37,7 +38,6 @@ class ExtractedRequirement(BaseModel):
     quote: str = Field(description="Exact sentence or clause copied verbatim from the text.")
     category: Category
     summary: str = Field(description="Short plain-language statement of what is required.")
-    mandatory: bool = Field(description="True if the text says must/shall/required/mandatory.")
     amount_as_written: str | None = Field(
         default=None,
         description='Money amount copied exactly as written, e.g. "Rs 50 lakh". null if none.',
@@ -49,10 +49,25 @@ class RequirementList(BaseModel):
 
 
 class Requirement(ExtractedRequirement):
-    """A requirement tied to where it came from (set by code, never by the LLM)."""
+    """A requirement plus fields set by code, never by the LLM."""
 
     id: str
     source_locator: str
+    mandatory: bool
+
+
+_MANDATORY = re.compile(r"\b(must|shall|required|mandatory|compulsory)\b", re.IGNORECASE)
+_NOT_MANDATORY = re.compile(
+    r"\b(not|no|need not|never)\s+(be\s+)?(required|mandatory|compulsory)\b", re.IGNORECASE
+)
+
+
+def is_mandatory(quote: str) -> bool:
+    """True if the clause uses must/shall/required/mandatory wording.
+
+    "should" and "may" are treated as not mandatory. "not required" cancels the match.
+    """
+    return bool(_MANDATORY.search(_NOT_MANDATORY.sub("", quote)))
 
 
 SYSTEM_PROMPT = (
