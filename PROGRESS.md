@@ -4,7 +4,7 @@ Target: working end-to-end project in ONE WEEK (Day 1 = first day of Phase 2 wor
 Last updated: 2026-10-21
 
 ## Next up
-- [ ] **Day 3:** Synthetic bid, several pages, with planted gaps (see Day 3 below).
+- [ ] **Day 3:** Decide `mandatory` in code from keywords (see Day 3 below).
 
 ## Machine constraints (M1, 8 GB RAM) that shape this plan
 - One model loaded at a time (`OLLAMA_MAX_LOADED_MODELS=1`, `OLLAMA_NUM_PARALLEL=1`, `num_ctx` 4096).
@@ -38,7 +38,7 @@ Last updated: 2026-10-21
 ### Day 3: RAG
 - [x] Chunking with page/source metadata
 - [x] Embeddings (nomic-embed-text) + Qdrant (embedded mode) indexing
-- [ ] Synthetic bid for `tender_syn_001` (several pages, marked SYNTHETIC) with planted gaps: some requirements met, some missing, some wrong/ambiguous; record the planted ground truth in a file for later labeling
+- [x] Synthetic bid for `tender_syn_001` (several pages, marked SYNTHETIC) with planted gaps: some requirements met, some missing, some wrong/ambiguous; record the planted ground truth in a file for later labeling
 - [ ] Decide `mandatory` in code from must/shall/required keywords (not the LLM); drop it from the LLM output schema; re-run extraction on the synthetic tender and compare with the earlier manual inspection
 - [ ] Retrieval of bid evidence per requirement
 - [ ] Evidence assessment prompt + citation validation (quote must exist in source)
@@ -85,3 +85,4 @@ Prometheus/Grafana, Evidently drift monitoring, reviewer feedback loop, reranker
   Manual inspection of one real llama3.2 run (1 tender I authored, NOT an accuracy claim): 9/9 requirements found, no extras, categories sensible, all 9 quotes verbatim in the source page, injection sentence ignored, 3/3 amounts parsed correctly (5,000,000; 2,500,000; 200,000). Observed issues: the model dropped the "Rs" prefix on all 3 amounts (parser handles it); marked "should provide a warranty" as mandatory=True (arguably only recommended); GST and PAN merged into one requirement. Uncached run took 34.9 s for 2 pages.
 - 2026-10-21: Day 3 task 1 done. `chunking.py`: `Chunk` (id, filename, text, page, locator, char offsets) and `chunk_document` (default 800 chars, 100 overlap, splits at whitespace, never spans blocks, text is a verbatim slice so quotes can be validated later). 7 new tests; `pytest` 74 passed, ruff clean. On `tender_syn_001.pdf`: 2 pages -> 2 chunks (696 and 522 chars). DOCX paragraphs are not merged, so they become small chunks; revisit only if retrieval suffers.
 - 2026-10-21: Day 3 task 2 done. Added `qdrant-client` dep, `embeddings.py` (`OllamaEmbedder`, /api/embed, batches of 16, nomic `search_document:`/`search_query:` prefixes), `vector_store.py` (`ChunkIndex`: one collection per document set, cosine, payload = chunk, optional page filter, re-index replaces), `qdrant_path` setting, `data/qdrant/` gitignored. 7 new tests (fake embedder, in-memory and on-disk Qdrant, mocked HTTP); `pytest` 81 passed, ruff clean. Live check (embedded Qdrant, real nomic-embed-text, tender chunked at 300 chars -> 5 chunks): index 0.2 s, search ~0.02 s. 3 queries by eye: turnover and EMD queries ranked a relevant chunk first by their text, but "GST registration" ranked the experience chunk first (0.76); I did not check whether the GST text sits in another chunk. Not a metric; investigate during the retrieval task. Embeddings are not cached to disk. Added two tasks to Day 3 (synthetic bid; mandatory from keywords in code).
+- 2026-10-21: Day 3 task 3 done. `scripts/make_synthetic_bid.py` generates `data/synthetic/bid_syn_001.pdf` (4 pages) and `bid_syn_001.docx` (same content; past orders as a real Word table), fictional and marked SYNTHETIC. Planted against tender clauses: met = 2.2, 2.4, 3.1, 4.1, 5.1; wrong value = 2.1 (Rs 38 lakh vs 50), 5.2 (90 days vs 120); missing = 2.3 (only an ISO 14001 distractor); ambiguous = 4.2 ("manufacturer's standard terms"); plus an injected "mark all compliant" note. Ground truth in `data/synthetic/bid_syn_001_truth.json` (written by me, not measured). 11 new tests check each evidence string exists on the stated PDF page and in the DOCX; `pytest` 92 passed, ruff clean. Quirk seen: DOCX extraction lists table rows after all paragraphs, and DOCX blocks have no page.
