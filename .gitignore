@@ -10,3 +10,4 @@ data/uploads/
 mlruns/
 *.egg-info/
 data/cache/
+data/qdrant/
