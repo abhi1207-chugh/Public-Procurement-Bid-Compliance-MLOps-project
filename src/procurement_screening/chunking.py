@@ -68,4 +68,9 @@ def _spans(text: str, max_chars: int, overlap: int) -> list[tuple[int, int]]:
         if end >= n:
             break
         pos = max(end - overlap, pos + 1)
+        if pos < n and not text[pos - 1].isspace() and not text[pos].isspace():
+            # start the next chunk at a word boundary, if the window has one
+            gap = next((i for i in range(pos, end) if text[i].isspace()), None)
+            if gap is not None:
+                pos = gap + 1
     return spans

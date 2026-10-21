@@ -38,6 +38,13 @@ def test_chunks_cover_all_text_with_overlap():
         assert b.start < a.end  # overlap, no gap
 
 
+def test_chunks_start_at_word_boundaries():
+    text = " ".join(f"longword{i}" for i in range(100))
+    words = set(text.split())
+    for c in chunk_document(_doc(TextBlock(text=text, page=1, locator="page 1")), 120, 40):
+        assert c.text.split()[0] in words and c.text.split()[-1] in words
+
+
 def test_chunks_do_not_span_blocks():
     doc = _doc(
         TextBlock(text="first page text", page=1, locator="page 1"),
