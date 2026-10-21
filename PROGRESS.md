@@ -1,10 +1,10 @@
 # Progress Tracker
 
 Target: working end-to-end project in ONE WEEK (Day 1 = first day of Phase 2 work).
-Last updated: 2026-10-20
+Last updated: 2026-10-21
 
 ## Next up
-- [ ] **Day 3:** Chunking with page/source metadata (see Day 3 below).
+- [ ] **Day 3:** Embeddings (nomic-embed-text) + Qdrant (embedded mode) indexing (see Day 3 below).
 
 ## Machine constraints (M1, 8 GB RAM) that shape this plan
 - One model loaded at a time (`OLLAMA_MAX_LOADED_MODELS=1`, `OLLAMA_NUM_PARALLEL=1`, `num_ctx` 4096).
@@ -36,7 +36,7 @@ Last updated: 2026-10-20
 - [x] Extract requirements from one synthetic tender; inspect results manually
 
 ### Day 3: RAG
-- [ ] Chunking with page/source metadata
+- [x] Chunking with page/source metadata
 - [ ] Embeddings (nomic-embed-text) + Qdrant (embedded mode) indexing
 - [ ] Retrieval of bid evidence per requirement
 - [ ] Evidence assessment prompt + citation validation (quote must exist in source)
@@ -81,3 +81,4 @@ Prometheus/Grafana, Evidently drift monitoring, reviewer feedback loop, reranker
 - 2026-10-20: Day 2 task 3 done. `amounts.py`: `parse_amount_rupees` (Decimal, handles Rs/Rs./INR/₹, lakh/lac/crore/cr/thousand/million, Indian and western commas, "/-", "only", parenthetical words; rejects ranges, multiple amounts, number words, negatives, surrounding prose with `AmountParseError`). 29 new test cases; `pytest` 66 passed, ruff clean. Not yet wired to requirement extraction.
 - 2026-10-20: Day 2 task 4 done (Day 2 complete). Added `requirement_extraction.py` (per-block LLM extraction; ids/locators set by code), `scripts/make_synthetic_tender.py` and `data/synthetic/tender_syn_001.pdf` (fictional, marked SYNTHETIC; 2 pages, 9 requirements I wrote, plus a prompt-injection sentence). `pytest` 67 passed, ruff clean.
   Manual inspection of one real llama3.2 run (1 tender I authored, NOT an accuracy claim): 9/9 requirements found, no extras, categories sensible, all 9 quotes verbatim in the source page, injection sentence ignored, 3/3 amounts parsed correctly (5,000,000; 2,500,000; 200,000). Observed issues: the model dropped the "Rs" prefix on all 3 amounts (parser handles it); marked "should provide a warranty" as mandatory=True (arguably only recommended); GST and PAN merged into one requirement. Uncached run took 34.9 s for 2 pages.
+- 2026-10-21: Day 3 task 1 done. `chunking.py`: `Chunk` (id, filename, text, page, locator, char offsets) and `chunk_document` (default 800 chars, 100 overlap, splits at whitespace, never spans blocks, text is a verbatim slice so quotes can be validated later). 7 new tests; `pytest` 74 passed, ruff clean. On `tender_syn_001.pdf`: 2 pages -> 2 chunks (696 and 522 chars). DOCX paragraphs are not merged, so they become small chunks; revisit only if retrieval suffers.
